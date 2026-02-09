@@ -1,0 +1,31 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Dashboard metrics auto-update",
+      "description": "Set up hourly cron job to refresh metrics data",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2026-02-08T00:00:00Z",
+      "updated_at": "2026-02-08T19:23:00Z"
+    },
+    {
+      "id": "2", 
+      "title": "Mobile responsive design",
+      "description": "Make dashboard work on mobile devices",
+      "status": "in-progress",
+      "priority": "high",
+      "created_at": "2026-02-08T20:34:00Z",
+      "updated_at": "2026-02-08T20:34:00Z"
+    },
+    {
+      "id": "3",
+      "title": "Rep Accountability Dashboard",
+      "description": "Integrate Congress.gov data for legislator tracking",
+      "status": "todo",
+      "priority": "medium",
+      "created_at": "2026-02-07T00:00:00Z",
+      "updated_at": "2026-02-07T00:00:00Z"
+    }
+  ]
+}

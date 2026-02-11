@@ -43,7 +43,8 @@ export default function Sidebar() {
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <div className="flex h-16 items-center justify-center border-b border-gray-800">
+        <div className="flex h-16 items-center justify-center gap-2 border-b border-gray-800 px-4">
+          <img src="/icon-192.png" alt="Aria Labs" className="w-8 h-8" />
           <h1 className="text-xl font-bold">Aria Dashboard</h1>
         </div>
         <nav className="flex-1 space-y-1 px-2 py-4">

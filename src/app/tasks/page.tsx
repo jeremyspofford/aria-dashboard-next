@@ -1,100 +1,93 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { fetchTasks, type Task } from '@/lib/api';
+import { useState, useEffect } from 'react';
 
-const columns = [
-  { id: 'todo', title: 'To Do', color: 'bg-gray-100' },
-  { id: 'in-progress', title: 'In Progress', color: 'bg-blue-100' },
-  { id: 'done', title: 'Done', color: 'bg-green-100' },
-];
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  acceptance_criteria: string[];
+  status: string;
+  priority: string;
+  project: string | null;
+  assignee: string | null;
+  created_at: string;
+  updated_at: string;
+  url: string;
+}
+
+const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+  'in-progress': { label: 'In Progress', color: 'text-yellow-700', bg: 'bg-yellow-100' },
+  'blocked': { label: 'Blocked', color: 'text-red-700', bg: 'bg-red-100' },
+  'todo': { label: 'To Do', color: 'text-blue-700', bg: 'bg-blue-100' },
+  'done': { label: 'Done', color: 'text-green-700', bg: 'bg-green-100' },
+};
+
+const priorityConfig: Record<string, { label: string; color: string }> = {
+  'high': { label: '🔴 High', color: 'text-red-600' },
+  'medium': { label: '🟡 Medium', color: 'text-yellow-600' },
+  'low': { label: '🟢 Low', color: 'text-green-600' },
+};
+
+const projectColors: Record<string, string> = {
+  'suppr': 'bg-purple-100 text-purple-700',
+  'accountability': 'bg-teal-100 text-teal-700',
+  'mercury': 'bg-blue-100 text-blue-700',
+  'dashboard': 'bg-indigo-100 text-indigo-700',
+  'nova': 'bg-pink-100 text-pink-700',
+  'jobhunter': 'bg-cyan-100 text-cyan-700',
+  'tododebt': 'bg-slate-100 text-slate-700',
+};
 
 function TaskCard({ task }: { task: Task }) {
-  const [expanded, setExpanded] = useState(false);
+  const status = statusConfig[task.status] || statusConfig.todo;
+  const priority = priorityConfig[task.priority] || priorityConfig.medium;
+  const projectClass = task.project ? projectColors[task.project] || 'bg-gray-100 text-gray-700' : '';
 
   return (
-    <div
-      className="rounded-lg bg-white p-3 sm:p-4 shadow transition-all hover:shadow-md cursor-pointer"
-      onClick={() => setExpanded(!expanded)}
+    <a
+      href={task.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-gray-200"
     >
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm sm:text-base font-medium text-gray-900">{task.title}</h3>
-        <span className={`transform transition-transform ${expanded ? 'rotate-180' : ''}`}>
-          ▼
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h3 className="font-medium text-gray-900 text-sm sm:text-base">{task.title}</h3>
+        <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${status.bg} ${status.color}`}>
+          {status.label}
         </span>
       </div>
       
-      {!expanded && task.description && (
-        <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600 line-clamp-2">{task.description}</p>
+      {task.description && (
+        <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
       )}
       
-      {expanded && (
-        <div className="mt-3 space-y-3 border-t pt-3">
-          {task.description && (
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase">Description</p>
-              <p className="mt-1 text-sm text-gray-700">{task.description}</p>
-            </div>
-          )}
-          
-          {task.acceptance_criteria && task.acceptance_criteria.length > 0 && (
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase">Acceptance Criteria</p>
-              <ul className="mt-1 space-y-1">
-                {task.acceptance_criteria.map((criteria, idx) => (
-                  <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
-                    <span className="text-green-600 flex-shrink-0">✓</span>
-                    <span>{criteria}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase">Status</p>
-              <p className="mt-1 text-sm text-gray-700 capitalize">{task.status.replace('-', ' ')}</p>
-            </div>
-            {task.priority && (
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase">Priority</p>
-                <p className="mt-1 text-sm text-gray-700 capitalize">{task.priority}</p>
-              </div>
+      <div className="flex flex-wrap gap-2 items-center text-xs">
+        {task.project && (
+          <span className={`px-2 py-0.5 rounded-full ${projectClass}`}>
+            {task.project}
+          </span>
+        )}
+        <span className={priority.color}>{priority.label}</span>
+        {task.assignee && (
+          <span className="text-gray-500">@{task.assignee}</span>
+        )}
+      </div>
+
+      {task.acceptance_criteria.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          <p className="text-xs text-gray-500 mb-1">Acceptance Criteria:</p>
+          <ul className="text-xs text-gray-600 space-y-0.5">
+            {task.acceptance_criteria.slice(0, 3).map((c, i) => (
+              <li key={i} className="truncate">• {c}</li>
+            ))}
+            {task.acceptance_criteria.length > 3 && (
+              <li className="text-gray-400">+{task.acceptance_criteria.length - 3} more</li>
             )}
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3">
-            {task.assignee && (
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase">Assignee</p>
-                <p className="mt-1 text-sm text-gray-700">{task.assignee}</p>
-              </div>
-            )}
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase">Created</p>
-              <p className="mt-1 text-sm text-gray-700">
-                {new Date(task.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
+          </ul>
         </div>
       )}
-      
-      {!expanded && task.priority && (
-        <span
-          className={`mt-2 inline-block rounded px-2 py-0.5 sm:py-1 text-xs font-medium ${
-            task.priority === 'high'
-              ? 'bg-red-100 text-red-700'
-              : task.priority === 'medium'
-              ? 'bg-yellow-100 text-yellow-700'
-              : 'bg-gray-100 text-gray-700'
-          }`}
-        >
-          {task.priority}
-        </span>
-      )}
-    </div>
+    </a>
   );
 }
 
@@ -102,101 +95,126 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeColumn, setActiveColumn] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>('all');
+  const [projectFilter, setProjectFilter] = useState<string>('all');
 
   useEffect(() => {
-    loadTasks();
+    async function fetchTasks() {
+      try {
+        const res = await fetch('/api/tasks');
+        const data = await res.json();
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        setTasks(data.tasks);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load tasks');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTasks();
   }, []);
 
-  async function loadTasks() {
-    try {
-      setLoading(true);
-      const data = await fetchTasks();
-      setTasks(data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load tasks');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const projects = [...new Set(tasks.map(t => t.project).filter(Boolean))];
+  
+  const filteredTasks = tasks.filter(task => {
+    if (filter !== 'all' && task.status !== filter) return false;
+    if (projectFilter !== 'all' && task.project !== projectFilter) return false;
+    return true;
+  });
 
-  const getTasksByStatus = (status: string) => {
-    return tasks.filter((task) => task.status === status);
+  const counts = {
+    total: tasks.length,
+    todo: tasks.filter(t => t.status === 'todo').length,
+    inProgress: tasks.filter(t => t.status === 'in-progress').length,
+    blocked: tasks.filter(t => t.status === 'blocked').length,
+    done: tasks.filter(t => t.status === 'done').length,
   };
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
-        <div className="text-base sm:text-lg text-gray-600">Loading tasks...</div>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6">Tasks</h1>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-3 text-gray-600">Loading from GitHub Issues...</span>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
-        <div className="text-base sm:text-lg text-red-600">{error}</div>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6">Tasks</h1>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+          {error}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-8">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tasks</h1>
-        <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Click any task to view details and acceptance criteria</p>
-      </div>
-
-      {/* Mobile column tabs */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-2 md:hidden">
-        {columns.map((column) => {
-          const count = getTasksByStatus(column.id).length;
-          return (
-            <button
-              key={column.id}
-              onClick={() => setActiveColumn(activeColumn === column.id ? null : column.id)}
-              className={`
-                flex-shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors
-                ${activeColumn === column.id ? 'bg-gray-900 text-white' : column.color + ' text-gray-700'}
-              `}
-            >
-              {column.title} ({count})
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Desktop: 3-column grid, Mobile: show selected or all stacked */}
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
-        {columns.map((column) => {
-          const columnTasks = getTasksByStatus(column.id);
-          const isVisible = !activeColumn || activeColumn === column.id;
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Tasks</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {counts.total} total • {counts.inProgress} in progress • {counts.blocked} blocked • {counts.todo} todo
+          </p>
+        </div>
+        
+        <div className="flex gap-2 flex-wrap">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+          >
+            <option value="all">All statuses</option>
+            <option value="in-progress">In Progress</option>
+            <option value="blocked">Blocked</option>
+            <option value="todo">To Do</option>
+            <option value="done">Done</option>
+          </select>
           
-          return (
-            <div
-              key={column.id}
-              className={`flex flex-col ${!isVisible ? 'hidden md:flex' : ''}`}
-            >
-              <div className={`rounded-t-lg p-3 sm:p-4 ${column.color}`}>
-                <h2 className="text-sm sm:text-base font-semibold text-gray-900">
-                  {column.title}
-                  <span className="ml-2 text-xs sm:text-sm text-gray-600">({columnTasks.length})</span>
-                </h2>
-              </div>
-              <div className="flex-1 space-y-2 sm:space-y-3 rounded-b-lg bg-gray-50 p-3 sm:p-4 min-h-[120px]">
-                {columnTasks.map((task) => (
-                  <TaskCard key={task.id} task={task} />
-                ))}
-                {columnTasks.length === 0 && (
-                  <div className="py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-400">No tasks</div>
-                )}
-              </div>
-            </div>
-          );
-        })}
+          <select
+            value={projectFilter}
+            onChange={(e) => setProjectFilter(e.target.value)}
+            className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+          >
+            <option value="all">All projects</option>
+            {projects.map(p => (
+              <option key={p} value={p!}>{p}</option>
+            ))}
+          </select>
+
+          <a
+            href="https://github.com/jeremyspofford/tasks/issues/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            + New Task
+          </a>
+        </div>
       </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredTasks.map((task) => (
+          <TaskCard key={task.id} task={task} />
+        ))}
+      </div>
+
+      {filteredTasks.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          No tasks match your filters
+        </div>
+      )}
+
+      <p className="mt-8 text-center text-xs text-gray-400">
+        Tasks powered by <a href="https://github.com/jeremyspofford/tasks" className="underline hover:text-gray-600">GitHub Issues</a>
+      </p>
     </div>
   );
 }

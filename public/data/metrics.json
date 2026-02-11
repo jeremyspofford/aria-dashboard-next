@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-02-11T17:02:11.695Z",
+  "generatedAt": "2026-02-11T18:00:50.362Z",
   "periodHours": 168,
   "sessions": {
-    "total": 19,
-    "active": 19
+    "total": 33,
+    "active": 33
   },
   "messages": {
-    "total": 210,
-    "user": 31,
-    "assistant": 179,
+    "total": 465,
+    "user": 61,
+    "assistant": 404,
     "errors": 0
   },
   "tokens": {
-    "input": 166035,
-    "output": 30203,
-    "cacheRead": 9627487,
-    "cacheWrite": 325930,
-    "total": 10149655
+    "input": 920210,
+    "output": 152910,
+    "cacheRead": 27888315,
+    "cacheWrite": 1016839,
+    "total": 29978274
   },
   "cost": {
-    "total": 7.345659199999998,
+    "total": 21.452796349999993,
     "byDay": {
-      "2026-02-11": 7.345659199999998
+      "2026-02-11": 21.452796349999993
     },
     "last7Days": [
       {
@@ -63,25 +63,26 @@
       {
         "date": "2026-02-11",
         "label": "Wed, Feb 11",
-        "cost": 7.345659199999998,
-        "messages": 483
+        "cost": 21.452796349999993,
+        "messages": 1056
       }
     ]
   },
   "latency": {
-    "avgMs": 10492,
-    "p50Ms": 3950,
+    "avgMs": 16908,
+    "p50Ms": 4298,
     "p95Ms": 72417,
-    "samples": 31
+    "samples": 60
   },
   "activity": {
     "byHour": {
       "2026-02-11T11": 419,
+      "2026-02-11T12": 576,
       "2026-02-11T10": 54,
-      "2026-02-11T12": 10
+      "2026-02-11T13": 7
     },
     "byDay": {
-      "2026-02-11": 483
+      "2026-02-11": 1056
     }
   },
   "errors": {

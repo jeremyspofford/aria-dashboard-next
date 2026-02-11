@@ -1,0 +1,95 @@
+{
+  "generatedAt": "2026-02-11T21:00:35.282Z",
+  "periodHours": 168,
+  "sessions": {
+    "total": 73,
+    "active": 73
+  },
+  "messages": {
+    "total": 936,
+    "user": 140,
+    "assistant": 796,
+    "errors": 0
+  },
+  "tokens": {
+    "input": 3912432,
+    "output": 239532,
+    "cacheRead": 55025480,
+    "cacheWrite": 2077276,
+    "total": 61254720
+  },
+  "cost": {
+    "total": 43.585673999999976,
+    "byDay": {
+      "2026-02-11": 43.585673999999976
+    },
+    "last7Days": [
+      {
+        "date": "2026-02-05",
+        "label": "Thu, Feb 5",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-06",
+        "label": "Fri, Feb 6",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-07",
+        "label": "Sat, Feb 7",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-08",
+        "label": "Sun, Feb 8",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-09",
+        "label": "Mon, Feb 9",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-10",
+        "label": "Tue, Feb 10",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-11",
+        "label": "Wed, Feb 11",
+        "cost": 43.585673999999976,
+        "messages": 2073
+      }
+    ]
+  },
+  "latency": {
+    "avgMs": 15019,
+    "p50Ms": 4324,
+    "p95Ms": 72417,
+    "samples": 140
+  },
+  "activity": {
+    "byHour": {
+      "2026-02-11T11": 419,
+      "2026-02-11T15": 380,
+      "2026-02-11T13": 173,
+      "2026-02-11T12": 459,
+      "2026-02-11T14": 577,
+      "2026-02-11T10": 54,
+      "2026-02-11T16": 11
+    },
+    "byDay": {
+      "2026-02-11": 2073
+    }
+  },
+  "errors": {
+    "total": 0,
+    "types": {}
+  }
+}

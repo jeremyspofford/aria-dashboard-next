@@ -2,8 +2,10 @@ export interface Task {
   id: string;
   title: string;
   description?: string;
+  acceptance_criteria?: string[];
   status: 'todo' | 'in-progress' | 'done';
   priority?: 'low' | 'medium' | 'high';
+  assignee?: string;
   created_at: string;
   updated_at: string;
 }

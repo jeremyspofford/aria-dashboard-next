@@ -37,6 +37,20 @@ function TaskCard({ task }: { task: Task }) {
             </div>
           )}
           
+          {task.acceptance_criteria && task.acceptance_criteria.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase">Acceptance Criteria</p>
+              <ul className="mt-1 space-y-1">
+                {task.acceptance_criteria.map((criteria, idx) => (
+                  <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
+                    <span className="text-green-600 flex-shrink-0">✓</span>
+                    <span>{criteria}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
           <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="text-xs font-medium text-gray-500 uppercase">Status</p>
@@ -51,16 +65,16 @@ function TaskCard({ task }: { task: Task }) {
           </div>
           
           <div className="grid grid-cols-2 gap-3">
+            {task.assignee && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase">Assignee</p>
+                <p className="mt-1 text-sm text-gray-700">{task.assignee}</p>
+              </div>
+            )}
             <div>
               <p className="text-xs font-medium text-gray-500 uppercase">Created</p>
               <p className="mt-1 text-sm text-gray-700">
                 {new Date(task.created_at).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase">Updated</p>
-              <p className="mt-1 text-sm text-gray-700">
-                {new Date(task.updated_at).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -130,14 +144,9 @@ export default function TasksPage() {
 
   return (
     <div className="min-h-full p-4 sm:p-6 lg:p-8">
-      <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tasks</h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Click any task to view details</p>
-        </div>
-        <button className="w-full sm:w-auto rounded-lg bg-blue-600 px-4 py-2 text-sm sm:text-base text-white transition-colors hover:bg-blue-700">
-          + New Task
-        </button>
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tasks</h1>
+        <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Click any task to view details and acceptance criteria</p>
       </div>
 
       {/* Mobile column tabs */}

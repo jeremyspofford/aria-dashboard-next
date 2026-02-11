@@ -1,82 +1,46 @@
 {
-  "generatedAt": "2026-02-09T00:22:34.788Z",
-  "periodDays": 7,
+  "generatedAt": "2026-02-11T16:00:32.877Z",
+  "periodHours": 168,
   "sessions": {
-    "total": 1,
-    "active": 1
+    "total": 6,
+    "active": 6
   },
   "messages": {
-    "user": 22,
-    "assistant": 138,
-    "total": 259,
-    "errors": 28
+    "total": 28,
+    "user": 8,
+    "assistant": 20,
+    "errors": 0
   },
   "tokens": {
-    "input": 920,
-    "output": 19093,
-    "total": 7039069
+    "input": 162,
+    "output": 1942,
+    "cacheRead": 291151,
+    "cacheWrite": 54343,
+    "total": 347598
   },
   "cost": {
-    "total": 8.58,
+    "total": 0.44015625000000014,
     "byDay": {
-      "2026-02-08": 5.716019749999996,
-      "2026-02-09": 2.86467375
-    },
-    "last7Days": [
-      {
-        "date": "2026-02-03",
-        "label": "Mon, Feb 2",
-        "cost": 0,
-        "messages": 0
-      },
-      {
-        "date": "2026-02-04",
-        "label": "Tue, Feb 3",
-        "cost": 0,
-        "messages": 0
-      },
-      {
-        "date": "2026-02-05",
-        "label": "Wed, Feb 4",
-        "cost": 0,
-        "messages": 0
-      },
-      {
-        "date": "2026-02-06",
-        "label": "Thu, Feb 5",
-        "cost": 0,
-        "messages": 0
-      },
-      {
-        "date": "2026-02-07",
-        "label": "Fri, Feb 6",
-        "cost": 0,
-        "messages": 0
-      },
-      {
-        "date": "2026-02-08",
-        "label": "Sat, Feb 7",
-        "cost": 5.716019749999996,
-        "messages": 198
-      },
-      {
-        "date": "2026-02-09",
-        "label": "Sun, Feb 8",
-        "cost": 2.86467375,
-        "messages": 61
-      }
-    ]
+      "2026-02-11": 0.44015625000000014
+    }
   },
   "latency": {
-    "avgMs": 0,
-    "p50Ms": 0,
-    "p95Ms": 0,
-    "samples": 0
+    "avgMs": 7523,
+    "p50Ms": 3745,
+    "p95Ms": 33470,
+    "samples": 8
   },
   "activity": {
+    "byHour": {
+      "2026-02-11T10": 54,
+      "2026-02-11T11": 17
+    },
     "byDay": {
-      "2026-02-08": 198,
-      "2026-02-09": 61
+      "2026-02-11": 71
     }
+  },
+  "errors": {
+    "total": 0,
+    "types": {}
   }
 }

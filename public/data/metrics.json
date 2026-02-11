@@ -1,42 +1,86 @@
 {
-  "generatedAt": "2026-02-11T16:00:32.877Z",
+  "generatedAt": "2026-02-11T16:11:27.960Z",
   "periodHours": 168,
   "sessions": {
-    "total": 6,
-    "active": 6
+    "total": 8,
+    "active": 8
   },
   "messages": {
-    "total": 28,
-    "user": 8,
-    "assistant": 20,
+    "total": 58,
+    "user": 13,
+    "assistant": 45,
     "errors": 0
   },
   "tokens": {
-    "input": 162,
-    "output": 1942,
-    "cacheRead": 291151,
-    "cacheWrite": 54343,
-    "total": 347598
+    "input": 382,
+    "output": 7402,
+    "cacheRead": 1064663,
+    "cacheWrite": 111439,
+    "total": 1183886
   },
   "cost": {
-    "total": 0.44015625000000014,
+    "total": 1.2973049500000002,
     "byDay": {
-      "2026-02-11": 0.44015625000000014
-    }
+      "2026-02-11": 1.2973049500000002
+    },
+    "last7Days": [
+      {
+        "date": "2026-02-05",
+        "label": "Thu, Feb 5",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-06",
+        "label": "Fri, Feb 6",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-07",
+        "label": "Sat, Feb 7",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-08",
+        "label": "Sun, Feb 8",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-09",
+        "label": "Mon, Feb 9",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-10",
+        "label": "Tue, Feb 10",
+        "cost": 0,
+        "messages": 0
+      },
+      {
+        "date": "2026-02-11",
+        "label": "Wed, Feb 11",
+        "cost": 1.2973049500000002,
+        "messages": 148
+      }
+    ]
   },
   "latency": {
-    "avgMs": 7523,
-    "p50Ms": 3745,
+    "avgMs": 6305,
+    "p50Ms": 3950,
     "p95Ms": 33470,
-    "samples": 8
+    "samples": 13
   },
   "activity": {
     "byHour": {
       "2026-02-11T10": 54,
-      "2026-02-11T11": 17
+      "2026-02-11T11": 94
     },
     "byDay": {
-      "2026-02-11": 71
+      "2026-02-11": 148
     }
   },
   "errors": {

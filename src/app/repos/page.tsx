@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type RepoStatus = 'poc' | 'alpha' | 'beta' | 'v1' | 'archived' | 'active';
 
@@ -9,8 +9,12 @@ interface Repo {
   desc: string;
   lang: string;
   isPrivate: boolean;
+  isArchived: boolean;
   status: RepoStatus;
   liveUrl?: string;
+  url: string;
+  updatedAt: string;
+  stars: number;
 }
 
 const statusConfig: Record<RepoStatus, { label: string; color: string; icon: string }> = {
@@ -22,48 +26,12 @@ const statusConfig: Record<RepoStatus, { label: string; color: string; icon: str
   archived: { label: 'Archived', color: 'bg-gray-100 text-gray-600', icon: '📦' },
 };
 
-const publicRepos: Repo[] = [
-  { name: 'aria-dashboard-next', desc: 'Nova monitoring dashboard', lang: 'TypeScript', isPrivate: false, status: 'beta', liveUrl: 'https://dashboard.arialabs.ai' },
-  { name: 'accountability-dashboard', desc: 'Track what politicians say vs do', lang: 'TypeScript', isPrivate: false, status: 'alpha', liveUrl: 'https://accountability.arialabs.ai' },
-  { name: 'dotfiles', desc: 'Machine configs and setup automation', lang: 'Shell', isPrivate: false, status: 'active' },
-  { name: 'launchpad', desc: 'Project starter templates', lang: 'TypeScript', isPrivate: false, status: 'active' },
-  { name: 'ai-coding-templates', desc: 'Secure AI coding templates with git-secrets', lang: 'Shell', isPrivate: false, status: 'v1' },
-  { name: 'n8n-builder', desc: 'AI-assisted n8n workflow builder', lang: 'TypeScript', isPrivate: false, status: 'alpha' },
-  { name: 'nova-ai-platform', desc: 'Nova AI platform core', lang: 'TypeScript', isPrivate: false, status: 'alpha' },
-  { name: 'serverless-auth-app', desc: 'AWS Lambda serverless auth example', lang: 'TypeScript', isPrivate: false, status: 'v1' },
-  { name: 'ai-chatbot', desc: 'Modular chatbot with plugin capabilities', lang: 'TypeScript', isPrivate: false, status: 'poc' },
-  { name: 'ai', desc: 'AI experiments and tools', lang: 'Python', isPrivate: false, status: 'poc' },
-  { name: 'ai-engineer-mlops-track', desc: 'MLOps learning track', lang: 'Python', isPrivate: false, status: 'active' },
-  { name: 'portfolio-original', desc: 'Original portfolio (deprecated)', lang: 'TypeScript', isPrivate: false, status: 'archived' },
-  { name: 'aria-labs-dashboard', desc: 'Old dashboard (deprecated)', lang: 'TypeScript', isPrivate: false, status: 'archived' },
-];
-
-const privateRepos: Repo[] = [
-  { name: 'portfolio', desc: 'Personal portfolio site', lang: 'TypeScript', isPrivate: true, status: 'v1', liveUrl: 'https://jeremyspofford.dev' },
-  { name: 'suppr', desc: 'Social dining app MVP', lang: 'TypeScript', isPrivate: true, status: 'beta', liveUrl: 'https://suppr.arialabs.ai' },
-  { name: 'mercury', desc: 'Privacy-first AI email processing', lang: 'TypeScript', isPrivate: true, status: 'alpha' },
-  { name: 'nova', desc: 'Nova AI Assistant core', lang: 'TypeScript', isPrivate: true, status: 'beta' },
-  { name: 'moltbot-infra', desc: 'Infrastructure: Pi gateway, Dell node, tunnels', lang: 'Shell', isPrivate: true, status: 'active' },
-  { name: 'facedrill-poc', desc: 'Face/name flashcard learning app', lang: 'TypeScript', isPrivate: true, status: 'poc' },
-  { name: 'deadlinr-poc', desc: 'Unified expiry & deadline tracker', lang: 'TypeScript', isPrivate: true, status: 'poc' },
-  { name: 'macros-only-poc', desc: 'Calorie-free macro tracker for ED recovery', lang: 'TypeScript', isPrivate: true, status: 'poc' },
-  { name: 'todo-graveyard-poc', desc: 'Scans codebase for zombie TODOs', lang: 'TypeScript', isPrivate: true, status: 'poc' },
-  { name: 'democracy-dashboard', desc: 'Political satire + accountability journalism', lang: 'TypeScript', isPrivate: true, status: 'poc' },
-  { name: 'rep-accountability-dashboard', desc: 'Rep voting tracker (original)', lang: 'TypeScript', isPrivate: true, status: 'archived' },
-  { name: 'dashboard', desc: 'Old dashboard prototype', lang: 'TypeScript', isPrivate: true, status: 'archived' },
-  { name: 'spofford-hub', desc: 'Landing page hub', lang: 'TypeScript', isPrivate: true, status: 'archived' },
-  { name: 'automations', desc: 'Personal automation scripts', lang: 'TypeScript', isPrivate: true, status: 'active' },
-  { name: 'homelab', desc: 'Homelab configuration', lang: 'Shell', isPrivate: true, status: 'active' },
-  { name: 'nexus', desc: 'Project nexus', lang: 'TypeScript', isPrivate: true, status: 'poc' },
-  { name: '.claude', desc: 'Shared Claude agent configs', lang: 'Markdown', isPrivate: true, status: 'active' },
-  { name: 'n8n-linkedin-job-matcher', desc: 'LinkedIn job matching automation', lang: 'TypeScript', isPrivate: true, status: 'poc' },
-];
-
 function RepoCard({ repo }: { repo: Repo }) {
-  const status = statusConfig[repo.status];
+  const status = statusConfig[repo.status] || statusConfig.active;
+  const timeAgo = getTimeAgo(new Date(repo.updatedAt));
   
   return (
-    <div className="rounded-lg bg-white p-3 sm:p-4 shadow hover:shadow-md transition-shadow">
+    <div className={`rounded-lg bg-white p-3 sm:p-4 shadow hover:shadow-md transition-shadow ${repo.isArchived ? 'opacity-60' : ''}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
@@ -72,14 +40,18 @@ function RepoCard({ repo }: { repo: Repo }) {
               <span>{status.icon}</span>
               <span>{status.label}</span>
             </span>
+            {repo.isPrivate && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">🔒</span>
+            )}
           </div>
           <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">{repo.desc}</p>
+          <p className="text-xs text-gray-400 mt-1">Updated {timeAgo}</p>
         </div>
         <span className="text-xs bg-gray-100 px-2 py-1 rounded flex-shrink-0">{repo.lang}</span>
       </div>
       <div className="mt-3 sm:mt-4 flex gap-3 flex-wrap">
         <a 
-          href={`https://github.com/jeremyspofford/${repo.name}`} 
+          href={repo.url} 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-xs text-gray-500 hover:text-gray-700 hover:underline"
@@ -101,58 +73,138 @@ function RepoCard({ repo }: { repo: Repo }) {
   );
 }
 
+function getTimeAgo(date: Date): string {
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  const intervals = [
+    { label: 'year', seconds: 31536000 },
+    { label: 'month', seconds: 2592000 },
+    { label: 'week', seconds: 604800 },
+    { label: 'day', seconds: 86400 },
+    { label: 'hour', seconds: 3600 },
+    { label: 'minute', seconds: 60 },
+  ];
+  
+  for (const interval of intervals) {
+    const count = Math.floor(seconds / interval.seconds);
+    if (count >= 1) {
+      return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
+    }
+  }
+  return 'just now';
+}
+
 export default function ReposPage() {
-  const [showPrivate, setShowPrivate] = useState(false);
+  const [repos, setRepos] = useState<Repo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
+  const [statusFilter, setStatusFilter] = useState<RepoStatus | 'all'>('all');
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchRepos() {
+      try {
+        const response = await fetch('/api/repos');
+        const data = await response.json();
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        setRepos(data.repos);
+        setFetchedAt(data.fetchedAt);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch repos');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRepos();
+  }, []);
+
+  const filteredRepos = repos.filter(repo => {
+    if (filter === 'public' && repo.isPrivate) return false;
+    if (filter === 'private' && !repo.isPrivate) return false;
+    if (statusFilter !== 'all' && repo.status !== statusFilter) return false;
+    return true;
+  });
+
+  const publicCount = repos.filter(r => !r.isPrivate).length;
+  const privateCount = repos.filter(r => r.isPrivate).length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-xl sm:text-2xl font-bold mb-6">Repositories</h1>
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-3 text-gray-600">Loading from GitHub...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-xl sm:text-2xl font-bold mb-6">Repositories</h1>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            Error: {error}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Repositories</h1>
-      <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">
-        {publicRepos.length + privateRepos.length} total repositories
-      </p>
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold">Repositories</h1>
+            <p className="text-sm text-gray-500">
+              {repos.length} repos • {publicCount} public • {privateCount} private
+              {fetchedAt && <span className="ml-2">• Updated {getTimeAgo(new Date(fetchedAt))}</span>}
+            </p>
+          </div>
+          
+          <div className="flex gap-2 flex-wrap">
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as any)}
+              className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+            >
+              <option value="all">All repos</option>
+              <option value="public">Public only</option>
+              <option value="private">Private only</option>
+            </select>
+            
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
+              className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+            >
+              <option value="all">All statuses</option>
+              <option value="v1">v1.0</option>
+              <option value="beta">Beta</option>
+              <option value="alpha">Alpha</option>
+              <option value="poc">POC</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
 
-      {/* Status Legend */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {Object.entries(statusConfig).map(([key, config]) => (
-          <span key={key} className={`text-xs px-2 py-1 rounded-full ${config.color} flex items-center gap-1`}>
-            <span>{config.icon}</span>
-            <span>{config.label}</span>
-          </span>
-        ))}
-      </div>
-
-      {/* Public Repos */}
-      <div className="mt-6 sm:mt-8">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-          Public Repositories ({publicRepos.length})
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {publicRepos.map((repo) => (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredRepos.map((repo) => (
             <RepoCard key={repo.name} repo={repo} />
           ))}
         </div>
-      </div>
 
-      {/* Private Repos - Collapsible */}
-      <div className="mt-8 sm:mt-10">
-        <button
-          onClick={() => setShowPrivate(!showPrivate)}
-          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-900 hover:text-gray-700 transition-colors"
-        >
-          <span className={`transform transition-transform ${showPrivate ? 'rotate-90' : ''}`}>
-            ▶
-          </span>
-          <span>Private Repositories ({privateRepos.length})</span>
-          <span className="text-sm font-normal text-gray-500">
-            {showPrivate ? 'click to collapse' : 'click to expand'}
-          </span>
-        </button>
-        
-        {showPrivate && (
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {privateRepos.map((repo) => (
-              <RepoCard key={repo.name} repo={repo} />
-            ))}
+        {filteredRepos.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No repositories match your filters
           </div>
         )}
       </div>

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 // Metadata overrides for repos (status, liveUrl, better descriptions)
 const repoMeta: Record<string, { status?: string; liveUrl?: string; desc?: string }> = {
   'aria-dashboard-next': { status: 'beta', liveUrl: 'https://dashboard.arialabs.ai', desc: 'Nova monitoring dashboard' },
-  'accountability-dashboard': { status: 'alpha', liveUrl: 'https://accountability.arialabs.ai', desc: 'Track what politicians say vs do' },
+  'accountability-dashboard': { status: 'alpha', liveUrl: 'https://reps.arialabs.ai', desc: 'Track what politicians say vs do' },
   'jobhunter': { status: 'alpha', liveUrl: 'https://jobhunter.arialabs.ai', desc: 'AI-powered job search assistant' },
   'suppr': { status: 'beta', liveUrl: 'https://suppr.arialabs.ai', desc: 'Social dining app MVP' },
   'portfolio': { status: 'v1', liveUrl: 'https://jeremyspofford.dev', desc: 'Personal portfolio site' },

@@ -25,14 +25,12 @@ jobs:
           cache: 'pnpm'
           
       - run: pnpm install
-      - run: pnpm pages:build
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - run: pnpm build
       
       - uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: aria-dashboard-next
-          directory: .vercel/output/static
+          directory: out
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

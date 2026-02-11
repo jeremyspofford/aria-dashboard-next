@@ -8,19 +8,27 @@ const repoMeta: Record<string, { status?: string; liveUrl?: string; desc?: strin
   'suppr': { status: 'beta', liveUrl: 'https://suppr.arialabs.ai', desc: 'Social dining app MVP' },
   'portfolio': { status: 'v1', liveUrl: 'https://jeremyspofford.dev', desc: 'Personal portfolio site' },
   'nova-ai-platform': { status: 'alpha', desc: 'Nova AI platform core' },
-  'todo-debt-poc': { status: 'poc', desc: 'Scan codebases for TODO debt' },
-  'facedrill-poc': { status: 'poc', desc: 'Face/name flashcard learning app' },
+  'todo-debt-poc': { status: 'poc', liveUrl: 'https://tododebt.arialabs.ai', desc: 'Scan codebases for TODO debt' },
+  'todo-graveyard-poc': { status: 'poc', desc: 'Find zombie TODOs that will never get fixed' },
+  'facedrill-poc': { status: 'poc', liveUrl: 'https://facedrill.arialabs.ai', desc: 'Face/name flashcard learning app' },
   'deadlinr-poc': { status: 'poc', desc: 'Unified expiry & deadline tracker' },
   'launchpad': { status: 'active', desc: 'Project starter templates' },
   'dotfiles': { status: 'active', desc: 'Machine configs and setup automation' },
   'mercury': { status: 'alpha', desc: 'Privacy-first AI email processing' },
   'moltbot-infra': { status: 'active', desc: 'Infrastructure: Pi gateway, Dell node, tunnels' },
+  'arialabs-landing': { status: 'v1', liveUrl: 'https://arialabs.ai', desc: 'Aria Labs company landing page' },
+  'tasks': { status: 'active', desc: 'Task tracking via GitHub Issues' },
+  'nova': { status: 'alpha', desc: 'Nova AI assistant core' },
+  'automations': { status: 'active', desc: 'Personal automation scripts' },
 };
 
 // Repos to hide from the dashboard
 const hiddenRepos = new Set([
-  'jeremyspofford',  // Profile repo
+  'jeremyspofford',      // Profile repo
   '.github',
+  'aria-labs-dashboard', // Old dashboard, replaced by aria-dashboard-next
+  'dashboard',           // Old dashboard
+  'ember-dashboard',     // Old dashboard
 ]);
 
 export async function GET() {

@@ -11,6 +11,9 @@ interface Task {
   priority: string;
   project: string | null;
   assignee: string | null;
+  assigneeRole: string | null;
+  needs: string[];
+  approved: string[];
   created_at: string;
   updated_at: string;
   url: string;
@@ -19,14 +22,25 @@ interface Task {
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   'in-progress': { label: 'In Progress', color: 'text-yellow-700', bg: 'bg-yellow-100' },
   'blocked': { label: 'Blocked', color: 'text-red-700', bg: 'bg-red-100' },
+  'review': { label: 'In Review', color: 'text-purple-700', bg: 'bg-purple-100' },
   'todo': { label: 'To Do', color: 'text-blue-700', bg: 'bg-blue-100' },
   'done': { label: 'Done', color: 'text-green-700', bg: 'bg-green-100' },
 };
 
 const priorityConfig: Record<string, { label: string; color: string }> = {
+  'critical': { label: '🔥 Critical', color: 'text-red-700 font-bold' },
   'high': { label: '🔴 High', color: 'text-red-600' },
   'medium': { label: '🟡 Medium', color: 'text-yellow-600' },
   'low': { label: '🟢 Low', color: 'text-green-600' },
+};
+
+const assigneeRoleConfig: Record<string, { label: string; color: string; bg: string }> = {
+  'jeremy': { label: 'Jeremy', color: 'text-blue-700', bg: 'bg-blue-100' },
+  'devops': { label: 'DevOps', color: 'text-green-700', bg: 'bg-green-100' },
+  'frontend': { label: 'Frontend', color: 'text-purple-700', bg: 'bg-purple-100' },
+  'backend': { label: 'Backend', color: 'text-indigo-700', bg: 'bg-indigo-100' },
+  'ux': { label: 'UX', color: 'text-pink-700', bg: 'bg-pink-100' },
+  'qa': { label: 'QA', color: 'text-yellow-700', bg: 'bg-yellow-100' },
 };
 
 const projectColors: Record<string, string> = {
@@ -43,6 +57,7 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
   const status = statusConfig[task.status] || statusConfig.todo;
   const priority = priorityConfig[task.priority] || priorityConfig.medium;
   const projectClass = task.project ? projectColors[task.project] || 'bg-gray-100 text-gray-700' : '';
+  const roleConfig = task.assigneeRole ? assigneeRoleConfig[task.assigneeRole] : null;
 
   return (
     <div 
@@ -66,6 +81,11 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
                   {task.project}
                 </span>
               )}
+              {roleConfig && (
+                <span className={`text-xs px-2 py-0.5 rounded-full ${roleConfig.bg} ${roleConfig.color}`}>
+                  {roleConfig.label}
+                </span>
+              )}
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{task.title}</h2>
           </div>
@@ -86,6 +106,25 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
             <span>Updated {new Date(task.updated_at).toLocaleDateString()}</span>
           </div>
 
+          {/* Workflow Gates */}
+          {(task.needs.length > 0 || task.approved.length > 0) && (
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Workflow Status</h3>
+              <div className="flex flex-wrap gap-2">
+                {task.needs.map((n) => (
+                  <span key={n} className="text-sm px-2 py-1 rounded-lg bg-orange-50 text-orange-700 border border-orange-200">
+                    ⏳ Needs: {n.replace('-', ' ')}
+                  </span>
+                ))}
+                {task.approved.map((a) => (
+                  <span key={a} className="text-sm px-2 py-1 rounded-lg bg-green-50 text-green-700 border border-green-200">
+                    ✅ {a.toUpperCase()} Approved
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Description */}
           {task.description && (
             <div>
@@ -101,7 +140,7 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
               <ul className="space-y-2">
                 {task.acceptance_criteria.map((c, i) => (
                   <li key={i} className="flex items-start gap-2 text-gray-600">
-                    <span className="text-gray-400">•</span>
+                    <span className="text-gray-400">☐</span>
                     <span>{c}</span>
                   </li>
                 ))}
@@ -130,6 +169,7 @@ function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
   const status = statusConfig[task.status] || statusConfig.todo;
   const priority = priorityConfig[task.priority] || priorityConfig.medium;
   const projectClass = task.project ? projectColors[task.project] || 'bg-gray-100 text-gray-700' : '';
+  const roleConfig = task.assigneeRole ? assigneeRoleConfig[task.assigneeRole] : null;
 
   return (
     <button
@@ -154,10 +194,31 @@ function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
           </span>
         )}
         <span className={priority.color}>{priority.label}</span>
-        {task.assignee && (
+        {roleConfig && (
+          <span className={`px-2 py-0.5 rounded-full ${roleConfig.bg} ${roleConfig.color}`}>
+            {roleConfig.label}
+          </span>
+        )}
+        {task.assignee && !roleConfig && (
           <span className="text-gray-500">@{task.assignee}</span>
         )}
       </div>
+
+      {/* Workflow gates */}
+      {(task.needs.length > 0 || task.approved.length > 0) && (
+        <div className="flex flex-wrap gap-1 mt-2">
+          {task.needs.map((n) => (
+            <span key={n} className="text-xs px-1.5 py-0.5 rounded bg-orange-50 text-orange-600">
+              needs:{n}
+            </span>
+          ))}
+          {task.approved.map((a) => (
+            <span key={a} className="text-xs px-1.5 py-0.5 rounded bg-green-50 text-green-600">
+              ✓ {a}
+            </span>
+          ))}
+        </div>
+      )}
 
       {task.acceptance_criteria.length > 0 && (
         <div className="mt-3 pt-3 border-t border-gray-100">
@@ -182,6 +243,7 @@ export default function TasksPage() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('all');
   const [projectFilter, setProjectFilter] = useState<string>('all');
+  const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   useEffect(() => {
@@ -214,10 +276,18 @@ export default function TasksPage() {
             const label = labels.find((l: any) => l.name?.startsWith(prefix));
             return label ? label.name.replace(prefix, '') : null;
           };
+          const getLabels = (prefix: string): string[] => {
+            return labels
+              .filter((l: any) => l.name?.startsWith(prefix))
+              .map((l: any) => l.name.replace(prefix, ''));
+          };
 
           const status = issue.state === 'closed' ? 'done' : (getLabel('status:') || 'todo');
           const priority = getLabel('priority:') || 'medium';
           const project = getLabel('project:');
+          const assigneeRole = getLabel('assignee:');
+          const needs = getLabels('needs:');
+          const approved = getLabels('approved:');
 
           // Parse acceptance criteria from body
           const criteria: string[] = [];
@@ -237,17 +307,20 @@ export default function TasksPage() {
             priority,
             project,
             assignee: issue.assignee?.login || null,
+            assigneeRole,
+            needs,
+            approved,
             created_at: issue.created_at,
             updated_at: issue.updated_at,
             url: issue.html_url,
           };
         });
 
-        // Sort: in-progress first, then blocked, then todo, then done
+        // Sort: in-progress first, then review, then blocked, then todo, then done
         const statusOrder: Record<string, number> = {
-          'in-progress': 0, 'blocked': 1, 'todo': 2, 'done': 3,
+          'in-progress': 0, 'review': 1, 'blocked': 2, 'todo': 3, 'done': 4,
         };
-        const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
+        const priorityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
 
         parsed.sort((a: Task, b: Task) => {
           const statusDiff = (statusOrder[a.status] ?? 4) - (statusOrder[b.status] ?? 4);
@@ -266,10 +339,12 @@ export default function TasksPage() {
   }, []);
 
   const projects = [...new Set(tasks.map(t => t.project).filter(Boolean))];
+  const assigneeRoles = [...new Set(tasks.map(t => t.assigneeRole).filter(Boolean))];
   
   const filteredTasks = tasks.filter(task => {
     if (filter !== 'all' && task.status !== filter) return false;
     if (projectFilter !== 'all' && task.project !== projectFilter) return false;
+    if (assigneeFilter !== 'all' && task.assigneeRole !== assigneeFilter) return false;
     return true;
   });
 
@@ -277,6 +352,7 @@ export default function TasksPage() {
     total: tasks.length,
     todo: tasks.filter(t => t.status === 'todo').length,
     inProgress: tasks.filter(t => t.status === 'in-progress').length,
+    review: tasks.filter(t => t.status === 'review').length,
     blocked: tasks.filter(t => t.status === 'blocked').length,
     done: tasks.filter(t => t.status === 'done').length,
   };
@@ -310,7 +386,7 @@ export default function TasksPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Tasks</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {counts.total} total • {counts.inProgress} in progress • {counts.blocked} blocked • {counts.todo} todo
+            {counts.total} total • {counts.inProgress} active • {counts.review} in review • {counts.blocked} blocked • {counts.todo} queued
           </p>
         </div>
         
@@ -322,6 +398,7 @@ export default function TasksPage() {
           >
             <option value="all">All statuses</option>
             <option value="in-progress">In Progress</option>
+            <option value="review">In Review</option>
             <option value="blocked">Blocked</option>
             <option value="todo">To Do</option>
             <option value="done">Done</option>
@@ -335,6 +412,17 @@ export default function TasksPage() {
             <option value="all">All projects</option>
             {projects.map(p => (
               <option key={p} value={p!}>{p}</option>
+            ))}
+          </select>
+
+          <select
+            value={assigneeFilter}
+            onChange={(e) => setAssigneeFilter(e.target.value)}
+            className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+          >
+            <option value="all">All assignees</option>
+            {assigneeRoles.map(r => (
+              <option key={r} value={r!}>{assigneeRoleConfig[r!]?.label || r}</option>
             ))}
           </select>
 

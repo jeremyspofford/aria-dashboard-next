@@ -64,13 +64,73 @@ export async function GET() {
         });
     }
 
-    // For tasks, we'll fetch from the local tasks.json in the future
-    // For now, return placeholder that can be updated
-    const taskCount = 12; // TODO: integrate with real task source
+    // Fetch tasks from GitHub Issues
+    let taskCount = 0;
+    try {
+      const tasksRes = await fetch(
+        'https://api.github.com/repos/jeremyspofford/tasks/issues?state=open&per_page=100',
+        {
+          headers: {
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'aria-dashboard',
+          },
+          next: { revalidate: 300 },
+        }
+      );
+
+      if (tasksRes.ok) {
+        const tasks = await tasksRes.json();
+        taskCount = tasks.filter((t: any) =>
+          t.labels?.some((l: any) => 
+            l.name === 'status:in-progress' || l.name === 'status:todo'
+          )
+        ).length;
+      }
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error);
+    }
+
+    // Fetch metrics from generated JSON file
+    let metrics = null;
+    try {
+      const metricsPath = './public/data/metrics.json';
+      const fs = await import('fs/promises');
+      const metricsData = await fs.readFile(metricsPath, 'utf-8');
+      metrics = JSON.parse(metricsData);
+    } catch (error) {
+      console.error('Failed to read metrics.json:', error);
+    }
+
+    // Calculate success rate from metrics
+    const totalMessages = metrics?.messages?.total ?? 0;
+    const errorMessages = metrics?.messages?.errors ?? 0;
+    const successRate = totalMessages > 0 
+      ? ((totalMessages - errorMessages) / totalMessages * 100).toFixed(1)
+      : null;
+
+    // Read infrastructure config
+    let infrastructureCount = 0;
+    try {
+      const configPath = './public/data/infrastructure.json';
+      const fs = await import('fs/promises');
+      const infraData = await fs.readFile(configPath, 'utf-8');
+      const infraConfig = JSON.parse(infraData);
+      infrastructureCount = infraConfig.devices?.filter((d: any) => d.online).length ?? 0;
+    } catch (error) {
+      console.error('Failed to read infrastructure.json:', error);
+    }
 
     return NextResponse.json({
       repos: { total: repoCount, public: publicCount },
       tasks: { active: taskCount },
+      metrics: {
+        successRate: successRate ? `${successRate}%` : null,
+        totalMessages: totalMessages,
+        errors: errorMessages,
+      },
+      infrastructure: {
+        devicesOnline: infrastructureCount,
+      },
       activity: recentActivity,
       fetchedAt: new Date().toISOString(),
     });

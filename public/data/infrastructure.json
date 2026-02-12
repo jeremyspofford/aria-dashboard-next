@@ -1,0 +1,22 @@
+{
+  "devices": [
+    {
+      "name": "Pi Gateway",
+      "online": true,
+      "role": "OpenClaw orchestration",
+      "ip": "100.89.154.45"
+    },
+    {
+      "name": "Dell XPS 8950",
+      "online": true,
+      "role": "GPU compute (Ollama)",
+      "ip": "100.89.190.125"
+    }
+  ],
+  "services": [
+    "OpenClaw Gateway",
+    "Telegram Bot",
+    "Cron Scheduler",
+    "Ollama"
+  ]
+}

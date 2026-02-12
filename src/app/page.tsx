@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 interface Stats {
   repos: { total: number; public: number };
   tasks: { active: number };
+  metrics: { successRate: string | null; totalMessages: number; errors: number };
+  infrastructure: { devicesOnline: number };
   activity: { icon: string; text: string; time: string }[];
   fetchedAt: string;
 }
@@ -13,15 +15,21 @@ interface Stats {
 export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchStats() {
       try {
         const res = await fetch('/api/stats');
+        if (!res.ok) {
+          throw new Error(`Failed to fetch stats: ${res.status}`);
+        }
         const data = await res.json();
         setStats(data);
+        setError(null);
       } catch (err) {
         console.error('Failed to fetch stats:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load stats');
       } finally {
         setLoading(false);
       }
@@ -32,28 +40,28 @@ export default function Home() {
   const statCards = [
     { 
       label: 'Active Tasks', 
-      value: stats?.tasks.active ?? '—', 
-      change: 'From kanban board', 
+      value: loading ? '—' : (stats?.tasks.active ?? 0), 
+      change: 'From GitHub Issues', 
       icon: '✅', 
       href: '/tasks' 
     },
     { 
       label: 'Repositories', 
-      value: stats?.repos.total ?? '—', 
+      value: loading ? '—' : (stats?.repos.total ?? '—'), 
       change: stats ? `${stats.repos.public} public` : '—', 
       icon: '📦', 
       href: '/repos' 
     },
     { 
       label: 'Metrics', 
-      value: '99.9%', 
-      change: 'Success rate', 
+      value: loading ? '—' : (stats?.metrics?.successRate ?? '—'), 
+      change: stats?.metrics ? `${stats.metrics.totalMessages} messages` : 'Success rate', 
       icon: '📈', 
       href: '/metrics' 
     },
     { 
       label: 'Infrastructure', 
-      value: '2', 
+      value: loading ? '—' : (stats?.infrastructure?.devicesOnline ?? '—'), 
       change: 'Devices online', 
       icon: '🖥️', 
       href: '/infrastructure' 
@@ -87,6 +95,11 @@ export default function Home() {
             </span>
           )}
         </p>
+        {error && (
+          <div className="mt-3 sm:mt-4 rounded-lg bg-red-50 p-3 sm:p-4 text-sm text-red-800">
+            ⚠️ {error}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 min-[375px]:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-4">

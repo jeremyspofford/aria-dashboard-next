@@ -101,12 +101,75 @@ export default function TasksPage() {
   useEffect(() => {
     async function fetchTasks() {
       try {
-        const res = await fetch('/api/tasks');
-        const data = await res.json();
-        if (data.error) {
-          throw new Error(data.error);
+        // Fetch directly from GitHub public API (repo is now public)
+        const [openRes, closedRes] = await Promise.all([
+          fetch('https://api.github.com/repos/jeremyspofford/tasks/issues?state=open&per_page=100', {
+            headers: { 'Accept': 'application/vnd.github.v3+json' },
+          }),
+          fetch('https://api.github.com/repos/jeremyspofford/tasks/issues?state=closed&per_page=20&sort=updated', {
+            headers: { 'Accept': 'application/vnd.github.v3+json' },
+          }),
+        ]);
+
+        if (!openRes.ok || !closedRes.ok) {
+          throw new Error('Failed to fetch from GitHub');
         }
-        setTasks(data.tasks);
+
+        const [openIssues, closedIssues] = await Promise.all([
+          openRes.json(),
+          closedRes.json(),
+        ]);
+
+        const allIssues = [...openIssues, ...closedIssues];
+
+        const parsed = allIssues.map((issue: any) => {
+          const labels = issue.labels || [];
+          const getLabel = (prefix: string) => {
+            const label = labels.find((l: any) => l.name?.startsWith(prefix));
+            return label ? label.name.replace(prefix, '') : null;
+          };
+
+          const status = issue.state === 'closed' ? 'done' : (getLabel('status:') || 'todo');
+          const priority = getLabel('priority:') || 'medium';
+          const project = getLabel('project:');
+
+          // Parse acceptance criteria from body
+          const criteria: string[] = [];
+          if (issue.body) {
+            for (const line of issue.body.split('\n')) {
+              const match = line.match(/^-\s*\[[ x]\]\s*(.+)$/);
+              if (match) criteria.push(match[1]);
+            }
+          }
+
+          return {
+            id: issue.number.toString(),
+            title: issue.title,
+            description: issue.body?.split('\n\n')[0] || '',
+            acceptance_criteria: criteria,
+            status,
+            priority,
+            project,
+            assignee: issue.assignee?.login || null,
+            created_at: issue.created_at,
+            updated_at: issue.updated_at,
+            url: issue.html_url,
+          };
+        });
+
+        // Sort: in-progress first, then blocked, then todo, then done
+        const statusOrder: Record<string, number> = {
+          'in-progress': 0, 'blocked': 1, 'todo': 2, 'done': 3,
+        };
+        const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
+
+        parsed.sort((a: Task, b: Task) => {
+          const statusDiff = (statusOrder[a.status] ?? 4) - (statusOrder[b.status] ?? 4);
+          if (statusDiff !== 0) return statusDiff;
+          return (priorityOrder[a.priority] ?? 1) - (priorityOrder[b.priority] ?? 1);
+        });
+
+        setTasks(parsed);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load tasks');
       } finally {

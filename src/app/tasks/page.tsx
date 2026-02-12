@@ -39,17 +39,102 @@ const projectColors: Record<string, string> = {
   'tododebt': 'bg-slate-100 text-slate-700',
 };
 
-function TaskCard({ task }: { task: Task }) {
+function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
   const status = statusConfig[task.status] || statusConfig.todo;
   const priority = priorityConfig[task.priority] || priorityConfig.medium;
   const projectClass = task.project ? projectColors[task.project] || 'bg-gray-100 text-gray-700' : '';
 
   return (
-    <a
-      href={task.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-gray-200"
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className={`text-xs px-2 py-0.5 rounded-full ${status.bg} ${status.color}`}>
+                {status.label}
+              </span>
+              <span className={`text-xs ${priority.color}`}>{priority.label}</span>
+              {task.project && (
+                <span className={`text-xs px-2 py-0.5 rounded-full ${projectClass}`}>
+                  {task.project}
+                </span>
+              )}
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{task.title}</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none p-1"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-4 sm:p-6 space-y-6">
+          {/* Meta */}
+          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+            <span>#{task.id}</span>
+            {task.assignee && <span>Assigned to @{task.assignee}</span>}
+            <span>Updated {new Date(task.updated_at).toLocaleDateString()}</span>
+          </div>
+
+          {/* Description */}
+          {task.description && (
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Description</h3>
+              <p className="text-gray-600 whitespace-pre-wrap">{task.description}</p>
+            </div>
+          )}
+
+          {/* Acceptance Criteria */}
+          {task.acceptance_criteria.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Acceptance Criteria</h3>
+              <ul className="space-y-2">
+                {task.acceptance_criteria.map((c, i) => (
+                  <li key={i} className="flex items-start gap-2 text-gray-600">
+                    <span className="text-gray-400">•</span>
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Footer */}
+          <div className="pt-4 border-t border-gray-200">
+            <a
+              href={task.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              View on GitHub →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
+  const status = statusConfig[task.status] || statusConfig.todo;
+  const priority = priorityConfig[task.priority] || priorityConfig.medium;
+  const projectClass = task.project ? projectColors[task.project] || 'bg-gray-100 text-gray-700' : '';
+
+  return (
+    <button
+      onClick={onClick}
+      className="block w-full text-left bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-gray-200 cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-medium text-gray-900 text-sm sm:text-base">{task.title}</h3>
@@ -87,7 +172,7 @@ function TaskCard({ task }: { task: Task }) {
           </ul>
         </div>
       )}
-    </a>
+    </button>
   );
 }
 
@@ -97,6 +182,7 @@ export default function TasksPage() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('all');
   const [projectFilter, setProjectFilter] = useState<string>('all');
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   useEffect(() => {
     async function fetchTasks() {
@@ -265,7 +351,7 @@ export default function TasksPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredTasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />
         ))}
       </div>
 
@@ -278,6 +364,11 @@ export default function TasksPage() {
       <p className="mt-8 text-center text-xs text-gray-400">
         Tasks powered by <a href="https://github.com/jeremyspofford/tasks" className="underline hover:text-gray-600">GitHub Issues</a>
       </p>
+
+      {/* Task Detail Modal */}
+      {selectedTask && (
+        <TaskModal task={selectedTask} onClose={() => setSelectedTask(null)} />
+      )}
     </div>
   );
 }

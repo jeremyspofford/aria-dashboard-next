@@ -31,30 +31,30 @@ function RepoCard({ repo }: { repo: Repo }) {
   const timeAgo = getTimeAgo(new Date(repo.updatedAt));
   
   return (
-    <div className={`rounded-lg bg-white p-3 sm:p-4 shadow hover:shadow-md transition-shadow ${repo.isArchived ? 'opacity-60' : ''}`}>
+    <div className={`rounded-lg bg-white p-4 sm:p-5 shadow hover:shadow-md transition-shadow ${repo.isArchived ? 'opacity-60' : ''}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-medium text-sm sm:text-base text-blue-600 truncate">{repo.name}</p>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${status.color} flex items-center gap-1`}>
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <p className="font-medium text-sm sm:text-base text-blue-600 break-words">{repo.name}</p>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${status.color} flex items-center gap-1 flex-shrink-0`}>
               <span>{status.icon}</span>
               <span>{status.label}</span>
             </span>
             {repo.isPrivate && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">🔒</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 flex-shrink-0">🔒</span>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">{repo.desc}</p>
-          <p className="text-xs text-gray-400 mt-1">Updated {timeAgo}</p>
+          <p className="text-xs sm:text-sm text-gray-500 mt-2 line-clamp-2 break-words">{repo.desc}</p>
+          <p className="text-xs text-gray-400 mt-2">Updated {timeAgo}</p>
         </div>
-        <span className="text-xs bg-gray-100 px-2 py-1 rounded flex-shrink-0">{repo.lang}</span>
+        <span className="text-xs bg-gray-100 px-2 py-1 rounded flex-shrink-0 h-fit">{repo.lang}</span>
       </div>
-      <div className="mt-3 sm:mt-4 flex gap-3 flex-wrap">
+      <div className="mt-4 flex gap-4 flex-wrap">
         <a 
           href={repo.url} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-xs text-gray-500 hover:text-gray-700 hover:underline"
+          className="text-xs sm:text-sm text-gray-500 hover:text-gray-700 hover:underline min-h-[44px] flex items-center"
         >
           GitHub ↗
         </a>
@@ -63,7 +63,7 @@ function RepoCard({ repo }: { repo: Repo }) {
             href={repo.liveUrl} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-xs text-green-600 hover:text-green-700 hover:underline font-medium"
+            className="text-xs sm:text-sm text-green-600 hover:text-green-700 hover:underline font-medium min-h-[44px] flex items-center"
           >
             Live Site ↗
           </a>
@@ -160,20 +160,20 @@ export default function ReposPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex flex-col gap-4 mb-6">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold">Repositories</h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500">
               {repos.length} repos • {publicCount} public • {privateCount} private
               {fetchedAt && <span className="ml-2">• Updated {getTimeAgo(new Date(fetchedAt))}</span>}
             </p>
           </div>
           
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex flex-col sm:flex-row gap-2">
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as any)}
-              className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+              className="text-sm border rounded-lg px-3 py-2 bg-white min-h-[44px] flex-1 sm:flex-initial"
             >
               <option value="all">All repos</option>
               <option value="public">Public only</option>
@@ -183,7 +183,7 @@ export default function ReposPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+              className="text-sm border rounded-lg px-3 py-2 bg-white min-h-[44px] flex-1 sm:flex-initial"
             >
               <option value="all">All statuses</option>
               <option value="v1">v1.0</option>
@@ -196,7 +196,7 @@ export default function ReposPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filteredRepos.map((repo) => (
             <RepoCard key={repo.name} repo={repo} />
           ))}

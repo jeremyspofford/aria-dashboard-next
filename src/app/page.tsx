@@ -89,12 +89,12 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-4">
+      <div className="grid grid-cols-1 min-[375px]:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 lg:grid-cols-4">
         {statCards.map((stat) => (
           <Link
             key={stat.label}
             href={stat.href}
-            className="rounded-lg bg-white p-4 sm:p-6 shadow hover:shadow-md transition-all hover:scale-[1.02] cursor-pointer"
+            className="rounded-lg bg-white p-4 sm:p-6 shadow hover:shadow-md active:shadow-lg transition-all hover:scale-[1.02] cursor-pointer min-h-[100px]"
           >
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
@@ -117,9 +117,9 @@ export default function Home() {
             {activity.map((item, i) => (
               <div key={i} className={`flex items-start gap-3 ${i < activity.length - 1 ? 'border-b border-gray-100 pb-3' : ''}`}>
                 <span className="text-base sm:text-lg flex-shrink-0">{item.icon}</span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{item.text}</p>
-                  {item.time && <p className="text-xs text-gray-500">{item.time}</p>}
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-gray-900 break-words">{item.text}</p>
+                  {item.time && <p className="text-xs text-gray-500 mt-0.5">{item.time}</p>}
                 </div>
               </div>
             ))}
@@ -133,7 +133,7 @@ export default function Home() {
               <Link
                 key={action.label}
                 href={action.href}
-                className="rounded-lg border border-gray-300 p-3 sm:p-4 text-left transition-all hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm"
+                className="rounded-lg border border-gray-300 p-3 sm:p-4 text-left transition-all hover:bg-gray-50 active:bg-gray-100 hover:border-gray-400 hover:shadow-sm min-h-[80px] flex flex-col justify-center"
               >
                 <div className="text-xl sm:text-2xl">{action.icon}</div>
                 <div className="mt-1 sm:mt-2 text-xs sm:text-sm font-medium text-gray-900">{action.label}</div>

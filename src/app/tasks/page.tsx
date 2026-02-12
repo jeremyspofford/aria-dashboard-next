@@ -61,11 +61,11 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-0 sm:p-4"
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        className="bg-white rounded-none sm:rounded-xl max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -91,7 +91,8 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none p-1"
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none p-2 -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Close"
           >
             ×
           </button>
@@ -174,7 +175,7 @@ function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="block w-full text-left bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-gray-200 cursor-pointer"
+      className="block w-full text-left bg-white rounded-lg p-4 sm:p-5 shadow-sm hover:shadow-md active:shadow-lg transition-all border border-gray-100 hover:border-gray-200 cursor-pointer min-h-[100px]"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-medium text-gray-900 text-sm sm:text-base">{task.title}</h3>
@@ -382,19 +383,19 @@ export default function TasksPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div className="flex flex-col gap-4 mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Tasks</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
             {counts.total} total • {counts.inProgress} active • {counts.review} in review • {counts.blocked} blocked • {counts.todo} queued
           </p>
         </div>
         
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-col sm:flex-row gap-2">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+            className="text-sm border rounded-lg px-3 py-2 bg-white min-h-[44px] flex-1 sm:flex-initial"
           >
             <option value="all">All statuses</option>
             <option value="in-progress">In Progress</option>
@@ -407,7 +408,7 @@ export default function TasksPage() {
           <select
             value={projectFilter}
             onChange={(e) => setProjectFilter(e.target.value)}
-            className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+            className="text-sm border rounded-lg px-3 py-2 bg-white min-h-[44px] flex-1 sm:flex-initial"
           >
             <option value="all">All projects</option>
             {projects.map(p => (
@@ -418,7 +419,7 @@ export default function TasksPage() {
           <select
             value={assigneeFilter}
             onChange={(e) => setAssigneeFilter(e.target.value)}
-            className="text-sm border rounded-lg px-3 py-1.5 bg-white"
+            className="text-sm border rounded-lg px-3 py-2 bg-white min-h-[44px] flex-1 sm:flex-initial"
           >
             <option value="all">All assignees</option>
             {assigneeRoles.map(r => (
@@ -430,14 +431,14 @@ export default function TasksPage() {
             href="https://github.com/jeremyspofford/tasks/issues/new"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="text-sm px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 min-h-[44px] flex items-center justify-center font-medium"
           >
             + New Task
           </a>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {filteredTasks.map((task) => (
           <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />
         ))}

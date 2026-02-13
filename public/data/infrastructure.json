@@ -1,22 +1,32 @@
 {
+  "lastUpdated": "2026-02-13T16:04:00Z",
   "devices": [
     {
-      "name": "Pi Gateway",
-      "online": true,
-      "role": "OpenClaw orchestration",
-      "ip": "100.89.154.45"
+      "name": "Dell XPS 8950",
+      "status": "online",
+      "role": "OpenClaw Gateway + GPU Compute",
+      "ip": "100.89.190.125",
+      "services": [
+        "OpenClaw Gateway",
+        "Telegram Bot",
+        "Cron Scheduler",
+        "Ollama",
+        "Nova Platform"
+      ]
     },
     {
-      "name": "Dell XPS 8950",
-      "online": true,
-      "role": "GPU compute (Ollama)",
-      "ip": "100.89.190.125"
+      "name": "Raspberry Pi 4",
+      "status": "offline",
+      "role": "Former gateway (decommissioned)",
+      "ip": "100.89.154.45",
+      "services": []
+    },
+    {
+      "name": "iPhone 14 Pro",
+      "status": "unknown",
+      "role": "Mobile node",
+      "ip": "100.73.238.101",
+      "services": []
     }
-  ],
-  "services": [
-    "OpenClaw Gateway",
-    "Telegram Bot",
-    "Cron Scheduler",
-    "Ollama"
   ]
 }

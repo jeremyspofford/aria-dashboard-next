@@ -23,13 +23,43 @@ function formatNumber(n: number): string {
 export default function MetricsPage() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdatedText, setLastUpdatedText] = useState<string>('');
 
   useEffect(() => {
     fetch('/data/metrics.json')
       .then(res => res.json())
-      .then(setMetrics)
+      .then((data: Metrics) => {
+        setMetrics(data);
+        updateLastUpdatedText(data.generatedAt);
+      })
       .catch(e => setError(e.message));
   }, []);
+
+  useEffect(() => {
+    if (!metrics) return;
+    
+    const interval = setInterval(() => {
+      updateLastUpdatedText(metrics.generatedAt);
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [metrics]);
+
+  const updateLastUpdatedText = (timestamp: string) => {
+    const now = new Date();
+    const updated = new Date(timestamp);
+    const diffMs = now.getTime() - updated.getTime();
+    const diffMinutes = Math.floor(diffMs / 60000);
+    
+    if (diffMinutes < 1) {
+      setLastUpdatedText('just now');
+    } else if (diffMinutes < 60) {
+      setLastUpdatedText(`${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`);
+    } else {
+      const diffHours = Math.floor(diffMinutes / 60);
+      setLastUpdatedText(`${diffHours} hour${diffHours === 1 ? '' : 's'} ago`);
+    }
+  };
 
   if (error) {
     return (
@@ -62,13 +92,19 @@ export default function MetricsPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Metrics</h1>
-      <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">
-        System performance and usage statistics
-      </p>
-      <p className="text-xs text-gray-400 mt-1">
-        Updated: {new Date(metrics.generatedAt).toLocaleString()}
-      </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Metrics</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">
+            System performance and usage statistics
+          </p>
+        </div>
+        {lastUpdatedText && (
+          <p className="text-xs sm:text-sm text-gray-500">
+            Last updated: <span className="font-medium">{lastUpdatedText}</span>
+          </p>
+        )}
+      </div>
       
       <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-6">
         {cards.map((m) => (

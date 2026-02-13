@@ -1,18 +1,12 @@
 {
-  "lastUpdated": "2026-02-13T16:04:00Z",
+  "lastUpdated": "2026-02-13T16:30:00Z",
   "devices": [
     {
       "name": "Dell XPS 8950",
       "status": "online",
       "role": "OpenClaw Gateway + GPU Compute",
       "ip": "100.89.190.125",
-      "services": [
-        "OpenClaw Gateway",
-        "Telegram Bot",
-        "Cron Scheduler",
-        "Ollama",
-        "Nova Platform"
-      ]
+      "services": ["OpenClaw Gateway", "Telegram Bot", "Cron Scheduler", "Ollama", "Nova Platform"]
     },
     {
       "name": "Raspberry Pi 4",

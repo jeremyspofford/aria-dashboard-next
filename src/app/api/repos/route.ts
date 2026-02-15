@@ -17,6 +17,7 @@ const repoMeta: Record<string, { status?: string; liveUrl?: string; desc?: strin
   'mercury': { status: 'alpha', desc: 'Privacy-first AI email processing' },
   'moltbot-infra': { status: 'active', desc: 'Infrastructure: Pi gateway, Dell node, tunnels' },
   'arialabs-landing': { status: 'v1', liveUrl: 'https://arialabs.ai', desc: 'Aria Labs company landing page' },
+  'landlord-lite-poc': { status: 'poc', liveUrl: 'https://landlordlite.arialabs.ai', desc: 'Property maintenance for small landlords' },
   'tasks': { status: 'active', desc: 'Task tracking via GitHub Issues' },
   'nova': { status: 'alpha', desc: 'Nova AI assistant core' },
   'automations': { status: 'active', desc: 'Personal automation scripts' },
